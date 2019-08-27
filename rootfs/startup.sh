@@ -69,10 +69,6 @@ fi
 PASSWORD=
 HTTP_PASSWORD=
 
-licenseFileDestination=/usr/local/bin/lic.lic
-if [ -f "$licenseFileDestination" ]
-then
-    echo "$LICENSE" > "$licenseFileDestination"
-fi
+echo "$LICENSE" > /usr/local/bin/lic.lic
 
 exec /bin/tini -- /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
