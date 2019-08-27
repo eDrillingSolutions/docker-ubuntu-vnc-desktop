@@ -69,6 +69,9 @@ fi
 PASSWORD=
 HTTP_PASSWORD=
 
-echo "$LICENSE" > /usr/local/bin/lic.lic
+# wellViz3d license
+if [ -n "$LICENSE" ]; then
+    echo -n "$LICENSE" > /usr/local/bin/lic.lic
+fi
 
 exec /bin/tini -- /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
