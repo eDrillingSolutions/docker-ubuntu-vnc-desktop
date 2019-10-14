@@ -1,7 +1,6 @@
 <template>
   <div style="width: 100%; height: 100%; background-color: #000;">
-    <iframe id="videoFrame" ref="videoFrame" class="frame" frameBorder="0" v-show="config.mode === 'video'" scrolling="no"></iframe>
-    <iframe id="vncFrame" ref="vncFrame" class="frame" v-bind:class="{hiddenvnc: config.mode === 'video'}" frameBorder="0" v-show="true" scrolling="no"></iframe>
+    <iframe id="vncFrame" ref="vncFrame" class="frame" frameBorder="0" v-show="true" scrolling="no"></iframe>
   </div>
 </template>
 
@@ -15,7 +14,6 @@ export default {
     return {
       // stopped -> connected -> disconnected
       vncState: 'stopped',
-      videoState: 'stopped',
       // toolbar
       config: {
         mode: 'vnc'
@@ -27,16 +25,12 @@ export default {
       width: 0,
       height: 0,
       //
-      videoCurrentTime: 0,
       stateErrorCount: 0,
       timerState: null
     }
   },
   created: function () {
     window.addEventListener('message', this.onMessage)
-    if ('video' in this.$route.query) {
-      this.config.mode = 'video'
-    }
   },
   mounted: function () {
     this.update_status()
@@ -50,7 +44,7 @@ export default {
       const w = this.$refs.vncFrame.clientWidth
       const h = this.$refs.vncFrame.clientHeight
       const params = {
-        'video': this.config.mode === 'video',
+        'video': false,
         'id': this.stateID,
         'w': w,
         'h': h
@@ -86,33 +80,6 @@ export default {
           this.reconnect(false)
         }
 
-        // video
-        // try {
-        //   let flvPlayer = this.$refs.videoFrame.contentWindow.flvPlayer
-        //   let readyState = 0
-        //   readyState = flvPlayer._mediaElement.readyState
-        //   if (readyState >= 3) {
-        //     this.videoState = 'running'
-        //     if (this.videoCurrentTime !== flvPlayer.currentTime * 1000) {
-        //       // playing
-        //       let diff = (flvPlayer._mediaElement.buffered.end(0) - flvPlayer.currentTime) * 1000
-        //       // console.log('player diff=' + diff)
-        //       if (diff >= 2000) {
-        //         // seek to nearest
-        //         console.log('seek to nearest')
-        //         flvPlayer._mediaElement.currentTime = flvPlayer._mediaElement.buffered.end(0)
-        //       }
-        //       this.videoCurrentTime = flvPlayer.currentTime * 1000
-        //     } else {
-        //       // stall
-        //       console.log('stall, restart')
-        //       this.videoState = 'stopped'
-        //     }
-        //   }
-        // } catch (e) {
-        //   // mediaElement TypeError
-        // }
-
         this.schedule_next_update_status()
       } catch (error) {
         this.stateErrorCount += 1
@@ -133,8 +100,6 @@ export default {
       }, afterMseconds)
     },
     reconnect: function (force = false) {
-      // console.trace()
-      console.log(`connecting...`)
       this.errorMessage = ''
       let websockifyPath = 'websockify'
       if (force || this.vncState === 'stopped') {
@@ -148,42 +113,19 @@ export default {
         url += 'autoconnect=1&'
         url += `host=${hostname}&port=${port}&`
         url += `path=${websockifyPath}&title=novnc2&`
-        url += `logging=warn`
+        url += `logging=warn&`
+        url += 'resize=scale&'
+        url += 'reconnect=true&'
+        url += 'reconnect_delay=1000'
         this.$refs.vncFrame.setAttribute('src', url)
-      }
-      if (this.config.mode === 'video') {
-        if (force || this.videoState === 'stopped') {
-          const w = this.$refs.vncFrame.clientWidth
-          const h = this.$refs.vncFrame.clientHeight
-          let url = `static/video.html?width=${w}&height=${h}&base=${window.location.host}`
-          this.$refs.videoFrame.setAttribute('src', url)
-          this.videoState = 'connecting'
-        }
-      } else {
-        if (this.videoState !== 'stopped') {
-          this.$refs.videoFrame.setAttribute('src', '')
-          this.videoState = 'stopped'
-        }
       }
     },
     onMessage: function (message) {
       try {
-        let data = JSON.parse(message.data)
-        if (data.from === 'flvjs') {
-          if (data.type === 'event') {
-            console.log(data.eventName)
-            if (data.eventName === 'onSourceOpen') {
-              this.videoState = 'running'
-            } else if (data.eventName === 'onSourceEnded') {
-            } else if (data.eventName === 'onSourceClose') {
-              this.videoState = 'stopped'
-            }
-          }
-        }
-        if (data.from === 'novnc') {
-          if (data.state) {
+        const data = JSON.parse(message.data)
+
+        if (data.from === 'novnc' && data.state) {
             this.vncState = data.state
-          }
         }
       } catch (exc) {
         // SyntaxError if JSON pasrse error
@@ -209,9 +151,5 @@ iframe {
     position: absolute;
     left: 0px;
     top: 0px;
-}
-
-.hiddenvnc {
-  opacity: 0;
 }
 </style>
