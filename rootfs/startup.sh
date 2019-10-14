@@ -20,6 +20,10 @@ if [ -n "$RESOLUTION" ]; then
     sed -i "s/1024x768/$RESOLUTION/" /usr/local/bin/xvfb.sh
 fi
 
+#Change default scaling and reconnect. Might be a workaround, but didn't find a simpler way.
+sed -i "s/UI.initSetting('resize', 'off')/UI.initSetting('resize', 'scale')/" ui.js
+sed -i "s/UI.initSetting('reconnect', false)/UI.initSetting('reconnect', true)/" ui.js
+
 USER=${USER:-root}
 HOME=/root
 if [ "$USER" != "root" ]; then
