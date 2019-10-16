@@ -190,8 +190,6 @@
 </dock>
 
 <keyboard>
-  <chainQuitKey>C-g</chainQuitKey>
-
   <!-- Keybindings for windows -->
   <keybind key="A-Escape">
     <action name="Lower"/>
@@ -200,47 +198,6 @@
   </keybind>
   <keybind key="A-space">
     <action name="ShowMenu"><menu>client-menu</menu></action>
-  </keybind>
-  <!-- Take a screenshot of the current window with scrot when Alt+Print are pressed -->
-  <keybind key="A-Print">
-    <action name="Execute"><command>scrot -s</command></action>
-  </keybind>
-
-  <!-- Keybindings for window switching with the arrow keys -->
-  <keybind key="W-S-Right">
-    <action name="DirectionalCycleWindows">
-      <direction>right</direction>
-    </action>
-  </keybind>
-  <keybind key="W-S-Left">
-    <action name="DirectionalCycleWindows">
-      <direction>left</direction>
-    </action>
-  </keybind>
-  <keybind key="W-S-Up">
-    <action name="DirectionalCycleWindows">
-      <direction>up</direction>
-    </action>
-  </keybind>
-  <keybind key="W-S-Down">
-    <action name="DirectionalCycleWindows">
-      <direction>down</direction>
-    </action>
-  </keybind>
-
-  <!-- Keybindings for running applications -->
-  <keybind key="W-e">
-    <action name="Execute">
-      <startupnotify>
-        <enabled>true</enabled>
-        <name>Konqueror</name>
-      </startupnotify>
-      <command>kfmclient openProfile filemanagement</command>
-    </action>
-  </keybind>
-  <!-- Launch scrot when Print is pressed -->
-  <keybind key="Print">
-    <action name="Execute"><command>scrot</command></action>
   </keybind>
 </keyboard>
 
@@ -287,10 +244,6 @@
   </context>
 
   <context name="Titlebar">
-    <mousebind button="Left" action="Drag">
-      <action name="Move"/>
-    </mousebind>
-
     <mousebind button="Up" action="Click">
       <action name="if">
         <shaded>no</shaded>
@@ -482,21 +435,6 @@
     <!-- Menus -->
     <mousebind button="Middle" action="Press">
       <action name="ShowMenu"><menu>client-list-combined-menu</menu></action>
-    </mousebind>
-  </context>
-
-  <context name="MoveResize">
-    <mousebind button="Up" action="Click">
-      <action name="GoToDesktop"><to>previous</to></action>
-    </mousebind>
-    <mousebind button="Down" action="Click">
-      <action name="GoToDesktop"><to>next</to></action>
-    </mousebind>
-    <mousebind button="A-Up" action="Click">
-      <action name="GoToDesktop"><to>previous</to></action>
-    </mousebind>
-    <mousebind button="A-Down" action="Click">
-      <action name="GoToDesktop"><to>next</to></action>
     </mousebind>
   </context>
 </mouse>
