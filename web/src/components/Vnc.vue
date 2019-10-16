@@ -112,7 +112,7 @@ export default {
         let url = 'static/vnc.html?'
         url += 'autoconnect=1&'
         url += `host=${hostname}&port=${port}&`
-        url += `path=${websockifyPath}&title=novnc2&`
+        url += `path=${websockifyPath}&title=wellViz3D&`
         url += `logging=warn&`
         url += 'resize=scale&'
         url += 'reconnect=true&'
